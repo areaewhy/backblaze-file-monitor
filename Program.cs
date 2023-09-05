@@ -13,7 +13,7 @@ namespace backblaze_directory_monitor
         {
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService(
-                    options => options.ServiceName = "Blaze-DirectoryMonitor-Service")
+                    options => options.ServiceName = "Backblaze-Upload-Monitor")
                 .ConfigureServices(
                 (context, services) =>
                 {

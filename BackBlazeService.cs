@@ -50,7 +50,7 @@ namespace backblaze_directory_monitor
 
                 ByteArrayContent byteArrayContent = new ByteArrayContent(fileBytes);
                 byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("audio/mpeg");
-                client.DefaultRequestHeaders.Add("X-Bz-File-Name", HttpUtility.UrlEncode(info.Name));
+                client.DefaultRequestHeaders.Add("X-Bz-File-Name", HttpUtility.UrlEncode($"{info.Directory.Name}/{info.Name}"));
                 byteArrayContent.Headers.Add("X-Bz-Content-Sha1", sha1);
                 byteArrayContent.Headers.Add("X-Bz-Info-Author", "temporal");
 
