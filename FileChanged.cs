@@ -65,16 +65,7 @@ namespace backblaze_directory_monitor
 
                         try
                         {
-                            using (var file = File.OpenHandle(e.FullPath, FileMode.Open))
-                            {
-                                var fileBytes = File.ReadAllBytes(e.FullPath);
-
-                                var fileInfo = new FileInfo(e.FullPath);
-
-                                var request = new Models.AudioFileUpload(fileBytes, "TemporalRiffs", fileInfo.Name);
-
-                                await BlazeService.UploadFile(uploadUrl, request);
-                            }
+                            await BlazeService.UploadFile(uploadUrl, e.FullPath);
 
                             // log success if no exception happened?
                             Logger.LogInformation($"Success: '{e.FullPath}' processed");

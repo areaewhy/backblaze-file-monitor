@@ -21,20 +21,6 @@ namespace backblaze_directory_monitor.Models
             ));
         }
 
-        public static string FileName_Safe(this AudioFileUpload data) => HttpUtility.UrlEncode(data.FileName);
-
-        public static ByteArrayContent BuildContent(this AudioFileUpload data)
-        {
-            string sha1 = Convert.ToHexString(SHA1.HashData(data.FileData));
-
-            var content = new ByteArrayContent(data.FileData);
-            content.Headers.ContentType = MediaTypeHeaderValue.Parse("audio/mpeg");
-            content.Headers.Add("X-Bz-Content-Sha1", sha1);
-            content.Headers.Add("X-Bz-Info-Author", data.Author);
-
-            return content;
-        }
-
         public static Uri BuildUploadUri(this AuthResult auth, string bucketId)
         {
             UriBuilder builder = new UriBuilder($"{auth.ApiInfo.StorageApi.ApiUrl}/b2api/v3/b2_get_upload_url");

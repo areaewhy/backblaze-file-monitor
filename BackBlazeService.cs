@@ -1,10 +1,14 @@
 ﻿using backblaze_directory_monitor.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace backblaze_directory_monitor
 {
@@ -39,21 +43,29 @@ namespace backblaze_directory_monitor
             }
         }
 
-        public async Task UploadFile(GetUploadUrlResponse upload, AudioFileUpload file)
+        public async Task UploadFile(GetUploadUrlResponse upload, string filePath)
         {
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.TryAddWithoutValidation(AUTHORIZATION, upload.AuthorizationToken);
-                var content = file.BuildContent();
-                var response = await client.PostAsync(upload.UploadUrl, (HttpContent)content);
+
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                var info = new FileInfo(filePath);
+
+                string sha1 = Convert.ToHexString(SHA1.HashData(fileBytes));
+
+                ByteArrayContent byteArrayContent = new ByteArrayContent(fileBytes);
+                byteArrayContent.Headers.ContentType = MediaTypeHeaderValue.Parse("audio/mpeg");
+                client.DefaultRequestHeaders.Add("X-Bz-File-Name", HttpUtility.UrlEncode(info.Name));
+                byteArrayContent.Headers.Add("X-Bz-Content-Sha1", sha1);
+                byteArrayContent.Headers.Add("X-Bz-Info-Author", "temporal");
+
+                var response = await client.PostAsync(upload.UploadUrl, (HttpContent)byteArrayContent);
                 var result = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
+                
+                if (!response.IsSuccessStatusCode)
                 {
-                    // log success
-                }
-                else
-                {
-                    // log failure
+                    throw new Exception($"Error uploading: [{response.StatusCode}] - {result}");
                 }
             }
         }
