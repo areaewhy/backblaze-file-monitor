@@ -1,4 +1,5 @@
 ﻿using backblaze_directory_monitor.Models;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -11,12 +12,20 @@ namespace backblaze_directory_monitor
         private const string authUrl = "https://api.backblazeb2.com/b2api/v3/b2_authorize_account";
         private const string AUTHORIZATION = "Authorization";
 
-        private readonly BackblazeUser AdminUser = new BackblazeUser("480f0c61fcfd", "005a874802f37997fd8b1557f2149929c833a5efb2");
+        private readonly BackblazeUser AdminUser; 
         private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions()
         {
             AllowTrailingCommas = true,
             PropertyNameCaseInsensitive = true,
         };
+
+        public BackBlazeService(IConfiguration config)
+        {
+            // user-secrets
+            string appId = config["BACKBLAZE:APPID"];
+            string appKey = config["BACKBLAZE:APPKEY"];
+            AdminUser = new BackblazeUser(appId, appKey);
+        }
 
         public async Task<AuthResult> Authorize()
         {

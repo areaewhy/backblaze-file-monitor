@@ -11,7 +11,7 @@ namespace backblaze_directory_monitor
     {
         public static void Main(string[] args)
         {
-            Host.CreateDefaultBuilder(args)
+            var builder = Host.CreateDefaultBuilder(args)
                 .UseWindowsService(
                     options => options.ServiceName = "Backblaze-Upload-Monitor")
                 .ConfigureServices(
@@ -23,13 +23,18 @@ namespace backblaze_directory_monitor
                     services.AddScoped<BackBlazeService>();
                     services.AddHostedService<WatcherService>();
                     services.AddSingleton<FileChanged>();
-                    
-                    services.AddLogging(builder => 
+
+
+
+                    services.AddLogging(builder =>
                         builder.AddConfiguration(
                             context.Configuration.GetSection("Logging")));
-                })
-                .Build()
-                .Run();
+                });
+
+
+            var app = builder.Build();
+
+            app.Run();
         }
     }
 }

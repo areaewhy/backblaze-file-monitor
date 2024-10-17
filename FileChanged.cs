@@ -14,6 +14,7 @@ namespace backblaze_directory_monitor
 
             BlazeService = blaze;
             Logger = logger;
+            Filter = "*.mp3";
 
             IncludeSubdirectories = true;
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.Size;
@@ -93,6 +94,10 @@ namespace backblaze_directory_monitor
 
                             // requeue at the end of the list for later attempt.
                             Changes.Enqueue(e);
+                        }
+                        catch(System.IO.FileNotFoundException x)
+                        {
+                            // I think we'll just eat this one...
                         }
                         // todo: handle upload failure; fetch new uploadUrl;
 
